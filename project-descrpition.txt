@@ -1,0 +1,24 @@
+Description of a scraping project.
+
+Extract book pages -- extract book data from its page -- use it.
+Data: title (str), book_description (str), price (int), stock_availability (bool), rating (int)
+
+1. locators package
+    book_items_locators.py:
+        * contains all the item locators for individual book.
+    book_pages_locators.py:
+        * contains the locators of books pages on every shop page.
+2. parsers
+    book_parser.py:
+        * contains a parser to parse through every book and extract data.
+3. pages
+    books_on_page.py:
+        * contains a class which uses parser and page (bs object) to return the properties of every book.
+4. books
+    books.py:
+        * when executed, re-writes content of books.json parsing website.
+5. statistics
+    matplotlib_figures.py:
+        * if executed, creates two distribution pngs based on the books' data.
+6. app.py:
+        *  small API to get some data from 'books.json'.
