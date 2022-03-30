@@ -2,6 +2,7 @@ import requests
 import json
 import aiohttp
 import asyncio
+import time
 
 from books_scraping.pages.books_on_page import BooksOnPage
 from books_scraping.books.books_filename import BooksFilename
@@ -9,7 +10,7 @@ from books_scraping.books.books_filename import BooksFilename
 
 async def _fetch_page(session, url):
     async with session.get(url) as response:
-        return response.content
+        return await response.text()  # html contents of responses are awaited
 
 
 async def get_multiple_pages(loop, *urls):
@@ -17,8 +18,8 @@ async def get_multiple_pages(loop, *urls):
     async with aiohttp.ClientSession(loop=loop) as session:
         for url in urls:
             tasks.append(_fetch_page(session, url))  # creates coroutine objects
-            grouped_tasks = asyncio.gather(*tasks)
-            return await grouped_tasks
+        grouped_tasks = asyncio.gather(*tasks)
+        return await grouped_tasks
 
 
 def _get_books_content():
@@ -31,7 +32,9 @@ def _get_books_content():
 
     loop = asyncio.get_event_loop()
     urls = [f'https://books.toscrape.com/catalogue/category/books_1/page-{i}.html' for i in range(1,51,1)]
+    start = time.time()
     page_contents = loop.run_until_complete(get_multiple_pages(loop, *urls))
+    print(f"Requests time: {time.time() - start:.10f} s")
 
     for page_content in page_contents:
         books = BooksOnPage(page_content)
